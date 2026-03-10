@@ -1,4 +1,8 @@
 # PsX - The Hybrid Programming Language
+⚠️ **Status:** PsX is currently under development.
+
+The language and its compiler are evolving, and new features are being added.  
+🚀 Future goal: **PsX support for web development.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -305,3 +309,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [![GitHub issues](https://img.shields.io/github/issues/YuvaVarshith4/PsX.svg)](https://github.com/YuvaVarshith4/PsX/issues)
 
 </div>
+
+🚧 **Note:** This project is still evolving and should be considered experimental.
+
