@@ -291,7 +291,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **GitHub Issues**: [Report bugs](https://github.com/YuvaVarshith4/PsX/issues)
 - **GitHub Discussions**: [Language design](https://github.com/YuvaVarshith4/PsX/discussions)
-- **Email**: [yuva@example.com](mailto:yuva@example.com)
+- **Email**: [yuvavarshith4926@gmail.com](mailto:yuva@example.com)
 
 ---
 
