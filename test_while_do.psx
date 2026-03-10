@@ -1,0 +1,14 @@
+var y = 5;
+
+print("While loop:");
+while(y > 0) {
+    print(y);
+    y = y - 1;
+}
+
+var z = 0;
+print("Do-while loop:");
+do {
+    print(z);
+    z = z + 1;
+} while(z < 3);

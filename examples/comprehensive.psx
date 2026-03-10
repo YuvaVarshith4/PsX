@@ -1,0 +1,59 @@
+var x = 5;
+var sum = 0;
+
+print("===== PsX COMPREHENSIVE TEST =====");
+print("Variable x initialized to: ");
+print(x);
+
+print("--- IF-ELSE TEST ---");
+if (x > 3) {
+    print("x is greater than 3");
+} else {
+    print("x is 3 or less");
+}
+
+print("--- FOR LOOP TEST (0 to 5) ---");
+for(int i = 0..5, +1) {
+    print(i);
+}
+
+print("--- FOR LOOP TEST (10 to 0, step -2) ---");
+for(int j = 10..0, -2) {
+    print(j);
+}
+
+print("--- WHILE LOOP TEST ---");
+var count = 0;
+while(count < 3) {
+    print(count);
+    count = count + 1;
+}
+
+print("--- DO-WHILE LOOP TEST ---");
+var k = 0;
+do {
+    print(k);
+    k = k + 1;
+} while(k < 3);
+
+print("--- COMPLEX EXPRESSION TEST ---");
+var result = 10 + 5 * 2;
+print("10 + 5 * 2 = ");
+print(result);
+
+print("--- SUM OF 1 TO 5 USING FOR LOOP ---");
+var total = 0;
+for(int n = 1..5, +1) {
+    total = total + n;
+    print(total);
+}
+
+print("--- NESTED FOR LOOPS (Multiplication Table 2x2) ---");
+for(int a = 1..2, +1) {
+    for(int b = 1..2, +1) {
+        var prod = a * b;
+        print(prod);
+    }
+}
+
+print("===== ALL TESTS COMPLETED =====");

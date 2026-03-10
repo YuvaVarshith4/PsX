@@ -1,0 +1,6 @@
+var count = 100;
+print("Do-while executes at least once:");
+do {
+    print("Executed!");
+    count = count + 1;
+} while(count < 5);
