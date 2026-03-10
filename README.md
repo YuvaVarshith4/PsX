@@ -299,7 +299,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🚀 PsX - Where Multiple Languages Meet in Perfect Harmony 🚀**
 
-*Write code that feels like home, no matter where you come from.*
+*Write code that feels like home, no matter where you come from. Welcome to PsX*
 
 [![GitHub stars](https://img.shields.io/github/stars/YuvaVarshith4/PsX.svg?style=social&label=Star)](https://github.com/YuvaVarshith4/PsX)
 [![GitHub forks](https://img.shields.io/github/forks/YuvaVarshith4/PsX.svg?style=social&label=Fork)](https://github.com/YuvaVarshith4/PsX)
