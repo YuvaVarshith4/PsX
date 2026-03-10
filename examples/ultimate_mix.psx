@@ -1,0 +1,164 @@
+// ultimate_mix.psx - The Complete PsX Hybrid Engine Showcase
+
+print("=========================================");
+print("🚀 PSX ULTIMATE HYBRID ENGINE SHOWCASE 🚀");
+print("=========================================");
+
+// ---------------------------------------------------------
+// 1. String Manipulation, Type Casting & Arrays
+// ---------------------------------------------------------
+print("\n[1] Data Ingestion & String Methods");
+
+var rawInput = "   Alex:72, Ron:80, John:99, Steve:43   ";
+print("Raw Input: [" + rawInput + "]");
+
+var cleanInput = str.trim(rawInput);
+var records = str.split(cleanInput, ",");
+
+print("Total records found: " + len(records));
+print("Type of records array: " + typeOf(records));
+
+// ---------------------------------------------------------
+// 2. Higher-Order Functions, Closures & Arrow Functions
+// ---------------------------------------------------------
+print("\n[2] Callbacks & Array Mapping");
+
+// Higher-order function to map data
+func mapData(data, transform) {
+    var results = [];
+    var resIdx = 0;
+    
+    // Custom PsX For-Loop
+    for(int i = 0..len(data) - 1, +1) {
+        results[resIdx] = transform(str.trim(data[i]));
+        resIdx++;
+    }
+    return results;
+}
+
+// Function factory creating a closure
+func createEvaluator(passMark) {
+    // Returns a multi-line arrow function
+    return (record) => {
+        var parts = str.split(record, ":");
+        var name = str.toUpper(parts[0]);
+        var score = int(parts[1]); // Type Casting
+        
+        // Math Methods & Math Shortcuts
+        score += math.rand(1, 5);      // Random bonus points
+        score = math.min(score, 100);  // Cap at 100
+        score = math.round(score);     // Ensure clean integer
+        
+        var status = "";
+        // Embedded If/Else inside a closure
+        if (score >= passMark) {
+            status = "PASS";
+        } else {
+            status = "FAIL";
+        }
+        
+        return name + " (" + score + ") - " + status;
+    };
+}
+
+// Instantiate the evaluator and map the records
+var grader = createEvaluator(70);
+var processedResults = mapData(records, grader);
+
+print("Processed Results:");
+for(int i = 0..len(processedResults) - 1, +1) {
+    print(" -> " + processedResults[i]);
+}
+
+// ---------------------------------------------------------
+// 3. Dynamic Array Operations (Push, Pop, Join)
+// ---------------------------------------------------------
+print("\n[3] Dynamic Array Operations");
+
+var auditLog = [];
+arr.push(auditLog, "INIT_AUDIT");
+arr.push(auditLog, "DATA_PROCESSED");
+arr.push(auditLog, "PENDING_REVIEW");
+arr.push(auditLog, "ERROR_STATE"); // Oops, let's remove this
+
+var removedState = arr.pop(auditLog);
+print("Popped State: " + removedState);
+print("Current Audit Log: " + arr.join(auditLog, " | "));
+
+// ---------------------------------------------------------
+// 4. Nested Functions, Exponents, & Loops (While / Do-While)
+// ---------------------------------------------------------
+print("\n[4] Complex Math & Nested Scoping");
+
+func calculatePowerMetrics(baseScore) {
+    // Nested Function
+    func applyMultiplier(factor) {
+        return factor ** 3; // Exponentiation shortcut
+    }
+    
+    var current = baseScore;
+    var iterations = 0;
+    
+    // While loop with multiplication assignment
+    while (current < 500) {
+        current *= 2; 
+        iterations++;
+    }
+    
+    // Do-while loop with decrement and subtraction assignments
+    var penalty = 10;
+    do {
+        current -= 15;
+        penalty--; // Decrement shortcut
+    } while (penalty > 0);
+    
+    var finalValue = math.abs(current);
+    finalValue %= 100; // Modulo assignment shortcut
+    
+    var bonusCurve = applyMultiplier(2);
+    finalValue += bonusCurve;
+    
+    return finalValue;
+}
+
+var magicMetric = calculatePowerMetrics(12);
+print("Calculated Magic Metric: " + magicMetric);
+
+// ---------------------------------------------------------
+// 5. Standalone Control Flow (If / Else)
+// ---------------------------------------------------------
+print("\n[5] Standalone Control Flow (If / Else)");
+
+var x = 4;
+var y = 5;
+
+print("Testing standalone condition: is x (" + x + ") > 5?");
+if (x > 5) {
+    print(" -> x is greater than 5");
+} else {
+    print(" -> x is 5 or less");
+}
+
+print("Testing expression condition: is x + y (" + (x + y) + ") > 12?");
+if (x + y > 12) {
+    print(" -> x+y is greater than 12");
+} else {
+    print(" -> x+y is NOT greater than 12");
+}
+
+// ---------------------------------------------------------
+// 6. Final Sanity Checks
+// ---------------------------------------------------------
+print("\n[6] Increments & Replacements");
+
+var loopCounter = 0;
+loopCounter++;
+loopCounter++;
+print("Counter after two ++ operations: " + loopCounter);
+
+var successStr = str.replace("Building PsX is good", "good", "INCREDIBLE");
+print("Final Verdict: " + successStr);
+
+print("\n=========================================");
+print("✅ ULTIMATE SHOWCASE COMPLETE");
+print("=========================================");

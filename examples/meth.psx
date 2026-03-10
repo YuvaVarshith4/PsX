@@ -1,0 +1,67 @@
+    // test_all.psx - Ultimate PsX Feature Test
+
+    print("=== 1. String Methods ===");
+    var phrase = "   learn PsX today   ";
+    print("Trimmed: [" + str.trim(phrase) + "]");
+    print("Upper: " + str.toUpper("hello lexi"));
+    print("Lower: " + str.toLower("PYTHON AND JS"));
+
+    var greeting = "code,sleep,repeat";
+    var words = str.split(greeting, ",");
+    print("Split Array [1]: " + words[1]);
+
+    var fixed = str.replace("I love Python", "Python", "PsX");
+    print("Replaced: " + fixed);
+
+    print("\n=== 2. Math & Exponents ===");
+    var base = 2;
+    var exponent = 8;
+    print("2 ** 8 = " + (base ** exponent));
+
+    var score = 99.8;
+    print("Round: " + math.round(score));
+    print("Floor: " + math.floor(score));
+    print("Ceil: " + math.ceil(score));
+    print("Abs of -50: " + math.abs(-50));
+    print("Max(10, 50): " + math.max(10, 50));
+    print("Min(10, 50): " + math.min(10, 50));
+    print("Random (1-100): " + math.rand(1, 100));
+
+    print("\n=== 3. Array Operations ===");
+    var stack = [10, 20];
+    print("Initial len: " + len(stack));
+    arr.push(stack, 30);
+    arr.push(stack, 40);
+    print("Pushed items. Join with dashes: " + arr.join(stack, "-"));
+    var popped = arr.pop(stack);
+    print("Popped item: " + popped);
+
+    print("\n=== 4. Advanced Assignments & Shortcuts ===");
+    var x = 10;
+    x++;
+    print("10 ++ -> " + x);
+    x--;
+    print("11 -- -> " + x);
+    x += 5;
+    print("10 += 5 -> " + x);
+    x -= 2;
+    print("15 -= 2 -> " + x);
+    x *= 10;
+    print("13 *= 10 -> " + x);
+    x /= 2;
+    print("130 /= 2 -> " + x);
+    x %= 60;
+    print("65 %= 60 -> " + x);
+
+    print("\n=== 5. Type Casting ===");
+    var numStr = "123";
+    var actualNum = int(numStr);
+    actualNum += 10;
+    print("Parsed Int + 10: " + actualNum);
+    print("Type of actualNum: " + typeOf(actualNum));
+
+    print("\n=== 6. Arrow Functions & Callbacks ===");
+    var multiply = (a, b) => a * b;
+    print("Arrow Func (5 * 4): " + multiply(5, 4));
+
+    print("\n=== All Tests Passed! ===");

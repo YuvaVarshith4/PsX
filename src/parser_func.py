@@ -1,0 +1,446 @@
+# src/parser_func.py - Parser for PsX with function support
+from lexer_func import Token
+
+class ASTNode:
+    def __init__(self, type_, value=None):
+        self.type = type_
+        self.value = value
+        self.children = []
+    def __repr__(self):
+        return f"{self.type}({self.value}) {self.children}"
+
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.pos = 0
+
+    def peek(self):
+        return self.tokens[self.pos] if self.pos < len(self.tokens) else None
+
+    def peek_next(self):
+        return self.tokens[self.pos + 1] if self.pos + 1 < len(self.tokens) else None
+
+    def advance(self):
+        self.pos += 1
+
+    def expect(self, type_):
+        tok = self.peek()
+        if not tok or tok.type != type_:
+            raise SyntaxError(f"Expected {type_}, got {tok}")
+        self.advance()
+
+    def parse(self):
+        nodes = []
+        while self.peek():
+            stmt = self.statement()
+            if stmt:
+                nodes.append(stmt)
+        return nodes
+
+    def statement(self):
+        tok = self.peek()
+        if not tok:
+            return None
+
+        if tok.type == 'VAR':
+            return self.var_declaration()
+        elif tok.type == 'FUNCTION':
+            return self.function_declaration()
+        elif tok.type == 'RETURN':
+            return self.return_statement()
+        elif tok.type == 'PRINT':
+            return self.print_statement()
+        elif tok.type == 'IF':
+            return self.if_statement()
+        elif tok.type == 'WHILE':
+            return self.while_statement()
+        elif tok.type == 'DO':
+            return self.do_while_statement()
+        elif tok.type == 'FOR':
+            return self.for_statement()
+        elif tok.type == 'IDENT':
+            return self.assignment_or_function_call()
+        else:
+            self.advance()
+            return None
+
+    def function_declaration(self):
+        self.advance()
+        name_tok = self.peek()
+        self.advance()
+        
+        self.expect('LPAREN')
+        params = []
+        
+        if self.peek() and self.peek().type != 'RPAREN':
+            params.append(self.peek().value)
+            self.advance()
+            while self.peek() and self.peek().type == 'COMMA':
+                self.advance()
+                params.append(self.peek().value)
+                self.advance()
+        
+        self.expect('RPAREN')
+        self.expect('LBRACE')
+        
+        body = []
+        while self.peek() and self.peek().type != 'RBRACE':
+            stmt = self.statement()
+            if stmt:
+                body.append(stmt)
+        self.expect('RBRACE')
+
+        node = ASTNode('FunctionDecl', name_tok.value)
+        node.children.append(ASTNode('Params', params))
+        node.children.append(ASTNode('Body', body))
+        return node
+
+    def var_declaration(self):
+        self.advance() 
+        name_tok = self.peek()
+        self.advance()
+        self.expect('ASSIGN')
+        value_expr = self.parse_expression()
+        self.expect('SEMICOLON')
+        node = ASTNode('VarDecl', name_tok.value)
+        node.children.append(value_expr)
+        return node
+
+    def assignment_or_function_call(self):
+        name_tok = self.peek()
+        self.advance()
+        
+        if self.peek() and self.peek().type == 'ASSIGN':
+            self.advance()
+            expr = self.parse_expression()
+            self.expect('SEMICOLON')
+            node = ASTNode('Assign', name_tok.value)
+            node.children.append(expr)
+            return node
+        elif self.peek() and self.peek().type == 'LBRACKET':
+            self.advance()
+            index_expr = self.parse_expression()
+            self.expect('RBRACKET')
+            self.expect('ASSIGN')
+            expr = self.parse_expression()
+            self.expect('SEMICOLON')
+            node = ASTNode('ArrayAssign', name_tok.value)
+            node.children.append(index_expr)
+            node.children.append(expr)
+            return node
+        elif self.peek() and self.peek().type == 'LPAREN':
+            return self.function_call(name_tok.value)
+        else:
+            raise SyntaxError(f"Expected '=', '[', or '(' after identifier, got {self.peek()}")
+
+    def function_call(self, func_name):
+        self.expect('LPAREN')
+        args = []
+        if self.peek() and self.peek().type != 'RPAREN':
+            args.append(self.parse_expression())
+            while self.peek() and self.peek().type == 'COMMA':
+                self.advance()
+                args.append(self.parse_expression())
+        self.expect('RPAREN')
+        self.expect('SEMICOLON')
+        node = ASTNode('Call', func_name)
+        for arg in args:
+            node.children.append(arg)
+        return node
+
+    def print_statement(self):
+        self.advance() 
+        self.expect('LPAREN')
+        expr_node = self.parse_expression()
+        self.expect('RPAREN')
+        self.expect('SEMICOLON')
+        node = ASTNode('Print')
+        node.children.append(expr_node)
+        return node
+
+    def return_statement(self):
+        self.advance()
+        expr = None
+        if self.peek() and self.peek().type != 'SEMICOLON':
+            expr = self.parse_expression()
+        self.expect('SEMICOLON')
+        node = ASTNode('Return')
+        if expr:
+            node.children.append(expr)
+        return node
+
+    def if_statement(self):
+        self.advance()
+        self.expect('LPAREN')
+        cond_expr = self.parse_expression()
+        self.expect('RPAREN')
+        self.expect('LBRACE')
+        
+        if_body = []
+        while self.peek() and self.peek().type != 'RBRACE':
+            stmt = self.statement()
+            if stmt:
+                if_body.append(stmt)
+        self.expect('RBRACE')
+
+        else_body = []
+        if self.peek() and self.peek().type == 'ELSE':
+            self.advance()
+            self.expect('LBRACE')
+            while self.peek() and self.peek().type != 'RBRACE':
+                stmt = self.statement()
+                if stmt:
+                    else_body.append(stmt)
+            self.expect('RBRACE')
+
+        node = ASTNode('If')
+        node.children.append(cond_expr)
+        node.children.append(ASTNode('Body', if_body))
+        node.children.append(ASTNode('Else', else_body))
+        return node
+
+    def while_statement(self):
+        self.advance()
+        self.expect('LPAREN')
+        cond_expr = self.parse_expression()
+        self.expect('RPAREN')
+        self.expect('LBRACE')
+        
+        body = []
+        while self.peek() and self.peek().type != 'RBRACE':
+            stmt = self.statement()
+            if stmt:
+                body.append(stmt)
+        self.expect('RBRACE')
+
+        node = ASTNode('While')
+        node.children.append(cond_expr)
+        node.children.append(ASTNode('Body', body))
+        return node
+
+    def do_while_statement(self):
+        self.advance()
+        self.expect('LBRACE')
+        
+        body = []
+        while self.peek() and self.peek().type != 'RBRACE':
+            stmt = self.statement()
+            if stmt:
+                body.append(stmt)
+        self.expect('RBRACE')
+
+        self.expect('WHILE')
+        self.expect('LPAREN')
+        cond_expr = self.parse_expression()
+        self.expect('RPAREN')
+        self.expect('SEMICOLON')
+
+        node = ASTNode('DoWhile')
+        node.children.append(ASTNode('Body', body))
+        node.children.append(cond_expr)
+        return node
+
+    def for_statement(self):
+        self.advance()
+        self.expect('LPAREN')
+
+        ident_tok = self.peek()
+        if ident_tok.value in ('int', 'float'):
+            self.advance()
+            var_tok = self.peek()
+            self.advance()
+        else:
+            var_tok = self.peek()
+            self.advance()
+
+        self.expect('ASSIGN')
+        start_expr = self.parse_expression() 
+        self.expect('RANGE')
+        end_expr = self.parse_expression()   
+        self.expect('COMMA')
+        step_expr = self.parse_expression()  
+        self.expect('RPAREN')
+
+        self.expect('LBRACE')
+        body_nodes = []
+        while self.peek() and self.peek().type != 'RBRACE':
+            stmt = self.statement()
+            if stmt:
+                body_nodes.append(stmt)
+        self.expect('RBRACE')
+
+        node = ASTNode('For')
+        node.children.append(ASTNode('Var', var_tok.value))
+        node.children.append(start_expr)
+        node.children.append(end_expr)
+        node.children.append(step_expr)
+        node.children.append(ASTNode('Body', body_nodes))
+        return node
+
+    def parse_expression(self):
+        if self.peek() and self.peek().type == 'IDENT':
+            next_tok = self.peek_next()
+            if next_tok and next_tok.type == 'ARROW':
+                ident_tok = self.peek()
+                self.advance()
+                self.advance()
+                if self.peek() and self.peek().type == 'LBRACE':
+                    self.expect('LBRACE')
+                    body = []
+                    while self.peek() and self.peek().type != 'RBRACE':
+                        stmt = self.statement()
+                        if stmt:
+                            body.append(stmt)
+                    self.expect('RBRACE')
+                    node = ASTNode('ArrowFunc')
+                    node.children.append(ASTNode('Params', [ident_tok.value]))
+                    node.children.append(ASTNode('Body', body))
+                    return node
+                else:
+                    body_expr = self.parse_expression()
+                    node = ASTNode('ArrowFunc')
+                    node.children.append(ASTNode('Params', [ident_tok.value]))
+                    node.children.append(body_expr)
+                    return node
+
+        return self.parse_comparison()
+
+    def parse_comparison(self):
+        node = self.parse_arithmetic()
+        if self.peek() and self.peek().type in ('EQ', 'NE', 'GT', 'LT', 'GE', 'LE'):
+            op_tok = self.peek()
+            self.advance()
+            right = self.parse_arithmetic()
+            op_node = ASTNode('BinOp', op_tok.value)
+            op_node.children.append(node)
+            op_node.children.append(right)
+            node = op_node
+        return node
+
+    def parse_arithmetic(self):
+        node = self.parse_term()
+        while self.peek() and self.peek().type in ('PLUS', 'MINUS'):
+            op_tok = self.peek()
+            self.advance()
+            right = self.parse_term()
+            op_node = ASTNode('BinOp', op_tok.value)
+            op_node.children.append(node)
+            op_node.children.append(right)
+            node = op_node
+        return node
+
+    def parse_term(self):
+        node = self.parse_factor()
+        while self.peek() and self.peek().type in ('MULT', 'DIV', 'MOD'):
+            op_tok = self.peek()
+            self.advance()
+            right = self.parse_factor()
+            op_node = ASTNode('BinOp', op_tok.value)
+            op_node.children.append(node)
+            op_node.children.append(right)
+            node = op_node
+        return node
+
+    def parse_factor(self):
+        tok = self.peek()
+        if tok.type in ('NUMBER', 'STRING'):
+            self.advance()
+            return ASTNode('Value', tok.value)
+        elif tok.type == 'LBRACKET': 
+            self.advance()
+            elements = []
+            if self.peek() and self.peek().type != 'RBRACKET':
+                elements.append(self.parse_expression())
+                while self.peek() and self.peek().type == 'COMMA':
+                    self.advance()
+                    elements.append(self.parse_expression())
+            self.expect('RBRACKET')
+            node = ASTNode('ArrayLiteral')
+            for el in elements:
+                node.children.append(el)
+            return node
+        elif tok.type == 'IDENT':
+            self.advance()
+            if self.peek() and self.peek().type == 'LBRACKET': 
+                self.advance()
+                index_expr = self.parse_expression()
+                self.expect('RBRACKET')
+                node = ASTNode('ArrayIndex', tok.value)
+                node.children.append(index_expr)
+                return node
+            elif self.peek() and self.peek().type == 'LPAREN': 
+                self.advance()
+                args = []
+                if self.peek() and self.peek().type != 'RPAREN':
+                    args.append(self.parse_expression())
+                    while self.peek() and self.peek().type == 'COMMA':
+                        self.advance()
+                        args.append(self.parse_expression())
+                self.expect('RPAREN')
+                node = ASTNode('Call', tok.value)
+                for arg in args:
+                    node.children.append(arg)
+                return node
+            return ASTNode('Value', tok.value)
+        elif tok.type == 'LPAREN':
+            self.advance()
+            if self.is_arrow_function():
+                return self.parse_arrow_function_from_paren()
+            else:
+                node = self.parse_expression()
+                self.expect('RPAREN')
+                return node
+        elif tok.type in ('PLUS', 'MINUS'):
+            op_tok = self.peek()
+            self.advance()
+            factor = self.parse_factor()
+            if op_tok.value == '+':
+                return factor
+            else:
+                zero = ASTNode('Value', '0')
+                op_node = ASTNode('BinOp', '-')
+                op_node.children.append(zero)
+                op_node.children.append(factor)
+                return op_node
+        else:
+            raise SyntaxError(f"Unexpected token {tok}")
+
+    def is_arrow_function(self):
+        i = self.pos
+        while i < len(self.tokens) and self.tokens[i].type != 'RPAREN':
+            i += 1
+        if i < len(self.tokens) and self.tokens[i].type == 'RPAREN':
+            i += 1
+        return i < len(self.tokens) and self.tokens[i].type == 'ARROW'
+
+    def parse_arrow_function_from_paren(self):
+        params = []
+        if self.peek() and self.peek().type != 'RPAREN':
+            params.append(self.peek().value)
+            self.advance()
+            while self.peek() and self.peek().type == 'COMMA':
+                self.advance()
+                params.append(self.peek().value)
+                self.advance()
+        
+        self.expect('RPAREN')
+        self.expect('ARROW')
+        
+        if self.peek() and self.peek().type == 'LBRACE':
+            self.expect('LBRACE')
+            body = []
+            while self.peek() and self.peek().type != 'RBRACE':
+                stmt = self.statement()
+                if stmt:
+                    body.append(stmt)
+            self.expect('RBRACE')
+            node = ASTNode('ArrowFunc')
+            node.children.append(ASTNode('Params', params))
+            node.children.append(ASTNode('Body', body))
+        else:
+            expr = self.parse_expression()
+            node = ASTNode('ArrowFunc')
+            node.children.append(ASTNode('Params', params))
+            node.children.append(expr)
+        
+        return node

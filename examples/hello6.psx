@@ -1,0 +1,149 @@
+// Function Declarations, Arrow Functions, and Callbacks in PsX
+
+// Basic function with parameters and return value
+func addNumbers(x, y) {
+    return x + y;
+}
+
+// Function without parameters
+func sayHello() {
+    print("Hello from PsX!");
+}
+
+// Function without return value (void function)
+func printSquare(n) {
+    var square = n * n;
+    print("Square of " + n + " is " + square);
+}
+
+// Arrow function - single expression
+var multiply = (a, b) => a * b;
+
+// Arrow function - single parameter (no parentheses)
+var double = x => x * 2;
+
+// Arrow function - no parameters
+var getRandom = () => 42; // Simplified for demo
+
+// Arrow function - multi-line body
+var complex = (x, y) => {
+    var temp = x + y;
+    return temp * 2;
+};
+
+// Higher-order function - takes another function as parameter
+func calculate(operation, a, b) {
+    print("Performing operation...");
+    return operation(a, b);
+}
+
+// Regular function to be used as callback
+func subtract(x, y) {
+    return x - y;
+}
+
+// Arrow function to be used as callback
+var divide = (x, y) => x / y;
+
+// Function that returns another function (function factory)
+func createMultiplier(factor) {
+    return x => x * factor;
+}
+
+// Function that demonstrates callback chaining
+func processData(data, transform, filter) {
+    var results = [];
+    var index = 0;
+    
+    for(int i = 0..len(data) - 1, +1) {
+        var item = data[i];
+        if (filter(item)) {
+            var transformed = transform(item);
+            results[index] = transformed;
+            index = index + 1;
+        }
+    }
+    
+    return results;
+}
+
+// Main program demonstrating all function types
+print("=== PsX Function Examples ===");
+
+// 1. Basic function calls
+print("\n--- Basic Functions ---");
+sayHello();
+var sum = addNumbers(10, 20);
+print("10 + 20 = " + sum);
+printSquare(5);
+
+// 2. Arrow function calls
+print("\n--- Arrow Functions ---");
+print("5 * 4 = " + multiply(5, 4));
+print("Double of 7 = " + double(7));
+print("Random number: " + getRandom());
+print("Complex operation: " + complex(3, 4));
+
+// 3. Functions as callbacks
+print("\n--- Callback Functions ---");
+var callbackSum = calculate((x, y) => x + y, 10, 5);
+var callbackDiff = calculate(subtract, 10, 5);
+var callbackQuotient = calculate(divide, 10, 5);
+
+print("Callback sum: " + callbackSum);
+print("Callback difference: " + callbackDiff);
+print("Callback quotient: " + callbackQuotient);
+
+// 4. Function factory
+print("\n--- Function Factory ---");
+var triple = createMultiplier(3);
+var quadruple = createMultiplier(4);
+print("Triple of 8 = " + triple(8));
+print("Quadruple of 8 = " + quadruple(8));
+
+// 5. Complex callback example
+print("\n--- Complex Callback Processing ---");
+var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// Process: get even numbers and square them
+var evenSquares = processData(
+    numbers,
+    x => x * x,           // Transform: square each number
+    x => x % 2 == 0       // Filter: only even numbers
+);
+
+print("Even squares:");
+for(int i = 0..len(evenSquares) - 1, +1) {
+    print(evenSquares[i]);
+}
+
+// Process: get odd numbers and double them
+var oddDoubles = processData(
+    numbers,
+    x => x * 2,           // Transform: double each number
+    x => x % 2 != 0       // Filter: only odd numbers
+);
+
+print("Odd doubles:");
+for(int i = 0..len(oddDoubles) - 1, +1) {
+    print(oddDoubles[i]);
+}
+
+// 6. Nested function calls
+print("\n--- Nested Function Calls ---");
+func outerFunction(x) {
+    print("Outer function called with: " + x);
+    
+    func innerFunction(y) {
+        return y * 10;
+    }
+    
+    var result = innerFunction(x);
+    print("Inner function result: " + result);
+    return result + 5;
+}
+
+var finalResult = outerFunction(7);
+print("Final result: " + finalResult);
+
+print("\n=== Function Examples Complete ===");
