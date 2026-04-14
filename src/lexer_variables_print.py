@@ -1,4 +1,3 @@
-# src/lexer_variables_print.py
 import re
 
 TOKEN_SPEC = [

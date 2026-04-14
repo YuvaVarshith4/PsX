@@ -1,4 +1,3 @@
-# src/main_meth_short.py
 import sys
 from lexer_meth_short import tokenize
 from parser_meth_short import Parser

@@ -1,4 +1,3 @@
-# src/lexer_ifelse_loops.py
 import re
 
 TOKEN_SPEC = [

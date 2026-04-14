@@ -1,18 +1,15 @@
-# src/runtime3.py
 class ASTNode:
-    def __init__(self, type_, value=None):
+    def __init__(self, type_, value=None, line=None):
         self.type = type_
         self.value = value
+        self.line = line
         self.children = []
-
 class Runtime:
     def __init__(self):
         self.env = {}
-
     def eval(self, nodes):
         for node in nodes:
             self.execute(node)
-
     def execute(self, node):
         if node.type == 'VarDecl':
             self.env[node.value] = self.eval_expression(node.children[0])
@@ -25,11 +22,10 @@ class Runtime:
             if self.compare(left_val, cond_node.value[1], right_val):
                 for stmt in node.children[1].value:
                     self.execute(stmt)
-            elif len(node.children) > 2:  # Check if else block exists
+            elif len(node.children) > 2:
                 for stmt in node.children[2].value:
                     self.execute(stmt)
-
-    # same eval_expression as v2
+  
     def eval_expression(self, node):
         if node.type == 'Value':
             return self.eval_value(node)
@@ -43,7 +39,6 @@ class Runtime:
             elif op == '/': return left / right
         else:
             raise ValueError(f"Unknown node type {node.type}")
-
     def eval_value(self, node):
         val = node.value
         if val in self.env:
@@ -55,7 +50,6 @@ class Runtime:
         if val.startswith('"') and val.endswith('"'):
             return val[1:-1]
         return val
-
     def compare(self, left, op, right):
         try:
             left = float(left)

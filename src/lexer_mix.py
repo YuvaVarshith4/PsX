@@ -1,4 +1,3 @@
-# src/lexer_mix.py
 import re
 
 TOKEN_SPEC = [

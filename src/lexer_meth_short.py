@@ -1,4 +1,3 @@
-# src/lexer_meth_short.py
 import re
 
 TOKEN_SPEC = [

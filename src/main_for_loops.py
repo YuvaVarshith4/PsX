@@ -1,4 +1,4 @@
-# src/main_for_loops.py - PsX interpreter with for loops
+
 from lexer_expressions_if import tokenize
 from parser_for_loops import Parser
 from runtime_for_loops import Runtime

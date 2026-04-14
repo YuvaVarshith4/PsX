@@ -1,5 +1,3 @@
-# src/main_while_dowhile.py - PsX interpreter with while and do-while loops
-
 from lexer_expressions_if import tokenize
 from parser_while_dowhile import Parser
 from runtime_while_dowhile import Runtime

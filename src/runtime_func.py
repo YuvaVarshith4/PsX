@@ -1,6 +1,4 @@
-# src/runtime_func.py - Runtime for PsX with function support
 import copy
-
 class Function:
     def __init__(self, name, params, body, is_arrow=False, closure_env=None, is_expr=False):
         self.name = name
@@ -9,26 +7,22 @@ class Function:
         self.is_arrow = is_arrow
         self.closure_env = closure_env or {}
         self.is_expr = is_expr
-
 class ReturnException(Exception):
     pass
-
 class ASTNode:
-    def __init__(self, type_, value=None):
+    def __init__(self, type_, value=None, line=None):
         self.type = type_
         self.value = value
+        self.line = line
         self.children = []
-
 class Runtime:
     def __init__(self):
         self.env = {}
         self.call_stack = []
         self.return_value = None
-
     def eval(self, nodes):
         for node in nodes:
             self.execute(node)
-
     def execute(self, node):
         if node.type == 'VarDecl':
             value = self.eval_expr(node.children[0])
@@ -105,7 +99,6 @@ class Runtime:
                 self.env[var_name] = i
                 for stmt in node.children[4].value:
                     self.execute(stmt)
-
     def call_function(self, func_name, args):
         if func_name == 'len':
             arg = self.eval_expr(args[0])
@@ -143,7 +136,6 @@ class Runtime:
             result = self.return_value
             self.env = old_env
             return result
-
     def eval_expr(self, node):
         if isinstance(node, str):
             return self.eval_value(node)
@@ -189,7 +181,6 @@ class Runtime:
             return Function(None, params, body, is_arrow=True, closure_env=copy.deepcopy(self.env), is_expr=is_expr)
         
         return self.eval_value(node.value) if hasattr(node, 'value') else node
-
     def eval_value(self, val):
         if isinstance(val, str) and val in self.env:
             return self.env[val]
@@ -208,7 +199,6 @@ class Runtime:
             return val[1:-1].replace('\\n', '\n')
         
         return val
-
     def compare(self, left, op, right):
         try:
             left = float(left)

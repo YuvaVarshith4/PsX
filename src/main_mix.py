@@ -1,4 +1,3 @@
-# src/main_mix.py
 import sys
 from lexer_mix import tokenize
 from parser_mix import Parser

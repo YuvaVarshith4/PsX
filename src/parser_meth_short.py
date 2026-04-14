@@ -1,34 +1,28 @@
-# src/parser_meth_short.py
-from lexer_meth_short import Token
 
+from lexer_meth_short import Token
 class ASTNode:
-    def __init__(self, type_, value=None):
+    def __init__(self, type_, value=None, line=None):
         self.type = type_
         self.value = value
         self.children = []
+        self.line = line
     def __repr__(self):
         return f"{self.type}({self.value}) {self.children}"
-
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
-
     def peek(self):
         return self.tokens[self.pos] if self.pos < len(self.tokens) else None
-
     def peek_next(self):
         return self.tokens[self.pos + 1] if self.pos + 1 < len(self.tokens) else None
-
     def advance(self):
         self.pos += 1
-
     def expect(self, type_):
         tok = self.peek()
         if not tok or tok.type != type_:
             raise SyntaxError(f"Expected {type_}, got {tok}")
         self.advance()
-
     def parse(self):
         nodes = []
         while self.peek():
@@ -36,12 +30,10 @@ class Parser:
             if stmt:
                 nodes.append(stmt)
         return nodes
-
     def statement(self):
         tok = self.peek()
         if not tok:
             return None
-
         if tok.type == 'VAR':
             return self.var_declaration()
         elif tok.type == 'FUNCTION':
@@ -63,7 +55,6 @@ class Parser:
         else:
             self.advance()
             return None
-
     def function_declaration(self):
         self.advance()
         name_tok = self.peek()
@@ -89,12 +80,10 @@ class Parser:
             if stmt:
                 body.append(stmt)
         self.expect('RBRACE')
-
         node = ASTNode('FunctionDecl', name_tok.value)
         node.children.append(ASTNode('Params', params))
         node.children.append(ASTNode('Body', body))
         return node
-
     def var_declaration(self):
         self.advance() 
         name_tok = self.peek()
@@ -105,7 +94,6 @@ class Parser:
         node = ASTNode('VarDecl', name_tok.value)
         node.children.append(value_expr)
         return node
-
     def assignment_or_function_call(self):
         name_tok = self.peek()
         self.advance()
@@ -152,7 +140,6 @@ class Parser:
             return self.function_call(ident_name)
         else:
             raise SyntaxError(f"Expected assignment or call after identifier, got {self.peek()}")
-
     def function_call(self, func_name):
         self.expect('LPAREN')
         args = []
@@ -167,7 +154,6 @@ class Parser:
         for arg in args:
             node.children.append(arg)
         return node
-
     def print_statement(self):
         self.advance() 
         self.expect('LPAREN')
@@ -177,7 +163,6 @@ class Parser:
         node = ASTNode('Print')
         node.children.append(expr_node)
         return node
-
     def return_statement(self):
         self.advance()
         expr = None
@@ -188,7 +173,6 @@ class Parser:
         if expr:
             node.children.append(expr)
         return node
-
     def if_statement(self):
         self.advance()
         self.expect('LPAREN')
@@ -202,7 +186,6 @@ class Parser:
             if stmt:
                 if_body.append(stmt)
         self.expect('RBRACE')
-
         else_body = []
         if self.peek() and self.peek().type == 'ELSE':
             self.advance()
@@ -212,13 +195,11 @@ class Parser:
                 if stmt:
                     else_body.append(stmt)
             self.expect('RBRACE')
-
         node = ASTNode('If')
         node.children.append(cond_expr)
         node.children.append(ASTNode('Body', if_body))
         node.children.append(ASTNode('Else', else_body))
         return node
-
     def while_statement(self):
         self.advance()
         self.expect('LPAREN')
@@ -232,12 +213,10 @@ class Parser:
             if stmt:
                 body.append(stmt)
         self.expect('RBRACE')
-
         node = ASTNode('While')
         node.children.append(cond_expr)
         node.children.append(ASTNode('Body', body))
         return node
-
     def do_while_statement(self):
         self.advance()
         self.expect('LBRACE')
@@ -248,22 +227,18 @@ class Parser:
             if stmt:
                 body.append(stmt)
         self.expect('RBRACE')
-
         self.expect('WHILE')
         self.expect('LPAREN')
         cond_expr = self.parse_expression()
         self.expect('RPAREN')
         self.expect('SEMICOLON')
-
         node = ASTNode('DoWhile')
         node.children.append(ASTNode('Body', body))
         node.children.append(cond_expr)
         return node
-
     def for_statement(self):
         self.advance()
         self.expect('LPAREN')
-
         ident_tok = self.peek()
         if ident_tok.value in ('int', 'float'):
             self.advance()
@@ -272,7 +247,6 @@ class Parser:
         else:
             var_tok = self.peek()
             self.advance()
-
         self.expect('ASSIGN')
         start_expr = self.parse_expression() 
         self.expect('RANGE')
@@ -280,7 +254,6 @@ class Parser:
         self.expect('COMMA')
         step_expr = self.parse_expression()  
         self.expect('RPAREN')
-
         self.expect('LBRACE')
         body_nodes = []
         while self.peek() and self.peek().type != 'RBRACE':
@@ -288,7 +261,6 @@ class Parser:
             if stmt:
                 body_nodes.append(stmt)
         self.expect('RBRACE')
-
         node = ASTNode('For')
         node.children.append(ASTNode('Var', var_tok.value))
         node.children.append(start_expr)
@@ -296,7 +268,6 @@ class Parser:
         node.children.append(step_expr)
         node.children.append(ASTNode('Body', body_nodes))
         return node
-
     def parse_expression(self):
         if self.peek() and self.peek().type == 'IDENT':
             next_tok = self.peek_next()
@@ -322,9 +293,7 @@ class Parser:
                     node.children.append(ASTNode('Params', [ident_tok.value]))
                     node.children.append(body_expr)
                     return node
-
         return self.parse_comparison()
-
     def parse_comparison(self):
         node = self.parse_arithmetic()
         if self.peek() and self.peek().type in ('EQ', 'NE', 'GT', 'LT', 'GE', 'LE'):
@@ -336,7 +305,6 @@ class Parser:
             op_node.children.append(right)
             node = op_node
         return node
-
     def parse_arithmetic(self):
         node = self.parse_term()
         while self.peek() and self.peek().type in ('PLUS', 'MINUS'):
@@ -348,7 +316,6 @@ class Parser:
             op_node.children.append(right)
             node = op_node
         return node
-
     def parse_term(self):
         node = self.parse_power()
         while self.peek() and self.peek().type in ('MULT', 'DIV', 'MOD'):
@@ -360,7 +327,6 @@ class Parser:
             op_node.children.append(right)
             node = op_node
         return node
-
     def parse_power(self):
         node = self.parse_factor()
         while self.peek() and self.peek().type == 'POWER':
@@ -372,7 +338,6 @@ class Parser:
             op_node.children.append(right)
             node = op_node
         return node
-
     def parse_factor(self):
         tok = self.peek()
         if tok.type in ('NUMBER', 'STRING'):
@@ -444,7 +409,6 @@ class Parser:
                 return op_node
         else:
             raise SyntaxError(f"Unexpected token {tok}")
-
     def is_arrow_function(self):
         i = self.pos
         while i < len(self.tokens) and self.tokens[i].type != 'RPAREN':
@@ -452,7 +416,6 @@ class Parser:
         if i < len(self.tokens) and self.tokens[i].type == 'RPAREN':
             i += 1
         return i < len(self.tokens) and self.tokens[i].type == 'ARROW'
-
     def parse_arrow_function_from_paren(self):
         params = []
         if self.peek() and self.peek().type != 'RPAREN':

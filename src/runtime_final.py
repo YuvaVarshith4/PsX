@@ -1,16 +1,12 @@
-# src/runtime_ifelse_loops.py - Comprehensive runtime for PsX with if, else, for, while, do-while
-
 class Runtime:
     def __init__(self):
         self.env = {}
-
     def eval(self, nodes):
         for node in nodes:
             self.execute(node)
-
-    # ========================
-    # STATEMENT EXECUTION
-    # ========================
+  
+  
+  
     def execute(self, node):
         if node.type == 'VarDecl':
             self.env[node.value] = self.eval_expr(node.children[0])
@@ -59,7 +55,7 @@ class Runtime:
             end = int(node.children[2].value)
             step = int(self.eval_expr(node.children[3]))
             
-            # Make end inclusive
+          
             if step > 0:
                 end_range = end + 1
             elif step < 0:
@@ -71,10 +67,9 @@ class Runtime:
                 self.env[var_name] = i
                 for stmt in node.children[4].value:
                     self.execute(stmt)
-
-    # ========================
-    # EXPRESSION EVALUATION
-    # ========================
+  
+  
+  
     def eval_expr(self, node):
         if isinstance(node, str):
             return self.eval_value(node)
@@ -95,10 +90,9 @@ class Runtime:
                 return left / right
         
         return self.eval_value(node.value) if hasattr(node, 'value') else node
-
-    # ========================
-    # VALUE EVALUATION
-    # ========================
+  
+  
+  
     def eval_value(self, val):
         if val in self.env:
             return self.env[val]
@@ -117,10 +111,9 @@ class Runtime:
             return val[1:-1]
         
         return val
-
-    # ========================
-    # COMPARISON
-    # ========================
+  
+  
+  
     def compare(self, left, op, right):
         try:
             left = float(left)

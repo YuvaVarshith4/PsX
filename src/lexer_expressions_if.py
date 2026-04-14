@@ -1,4 +1,3 @@
-# src/lexer_expressions_if.py
 import re
 
 TOKEN_SPEC = [
@@ -22,8 +21,8 @@ TOKEN_SPEC = [
     ('RPAREN',   r'\)'),
     ('LBRACE',   r'\{'),
     ('RBRACE',   r'\}'),
-    ('RANGE',    r'\.\.'),  # for 0..5
-    ('COMMA',    r','),     # for step in for loops
+    ('RANGE',    r'\.\.'),
+    ('COMMA',    r','),   
     ('GT',       r'>'),
     ('LT',       r'<'),
     ('PLUS',     r'\+'),

@@ -1,8 +1,6 @@
-# src/runtime_mix.py
 import copy
 import random
 import math
-
 class Function:
     def __init__(self, name, params, body, is_arrow=False, closure_env=None, is_expr=False):
         self.name = name
@@ -11,21 +9,18 @@ class Function:
         self.is_arrow = is_arrow
         self.closure_env = closure_env or {}
         self.is_expr = is_expr
-
 class NativeFunction:
     def __init__(self, name, func):
         self.name = name
         self.func = func
-
 class ReturnException(Exception):
     pass
-
 class ASTNode:
-    def __init__(self, type_, value=None):
+    def __init__(self, type_, value=None, line=None):
         self.type = type_
         self.value = value
+        self.line = line
         self.children = []
-
 class Runtime:
     def __init__(self):
         self.env = {
@@ -55,25 +50,20 @@ class Runtime:
         }
         self.call_stack = []
         self.return_value = None
-
     def _math_rand(self, args):
         if len(args) == 2: return random.randint(int(args[0]), int(args[1]))
         return random.random()
-
     def _arr_push(self, args):
         if len(args) == 2 and isinstance(args[0], list):
             args[0].append(args[1])
             return args[0]
         return None
-
     def _arr_pop(self, args):
         if len(args) == 1 and isinstance(args[0], list) and len(args[0]) > 0:
             return args[0].pop()
         return None
-
     def eval(self, nodes):
         for node in nodes: self.execute(node)
-
     def execute(self, node):
         if node.type == 'VarDecl':
             self.env[node.value] = self.eval_expr(node.children[0])
@@ -138,7 +128,6 @@ class Runtime:
             for i in range(start, end_range, step):
                 self.env[var_name] = i
                 for stmt in node.children[4].value: self.execute(stmt)
-
     def call_function(self, func_name, args):
         func = self.eval_expr(ASTNode('Value', func_name))
         evaluated_args = [self.eval_expr(arg) for arg in args]
@@ -166,7 +155,6 @@ class Runtime:
             result = self.return_value
             self.env = old_env
             return result
-
     def eval_expr(self, node):
         if isinstance(node, str): return self.eval_value(node)
         if node.type == 'Value': return self.eval_value(node.value)
@@ -194,7 +182,6 @@ class Runtime:
             body = [node.children[1]] if is_expr else node.children[1].value
             return Function(None, params, body, is_arrow=True, closure_env=copy.deepcopy(self.env), is_expr=is_expr)
         return self.eval_value(node.value) if hasattr(node, 'value') else node
-
     def eval_value(self, val):
         if isinstance(val, str) and val in self.env: return self.env[val]
         try: return int(val)
@@ -204,7 +191,6 @@ class Runtime:
         if isinstance(val, str) and val.startswith('"') and val.endswith('"'):
             return val[1:-1].replace('\\n', '\n')
         return val
-
     def compare(self, left, op, right):
         try:
             left, right = float(left), float(right)

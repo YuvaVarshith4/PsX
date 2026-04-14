@@ -1,25 +1,21 @@
-# src/parser_expressions_if.py
-from lexer_expressions_if import Token
 
+from lexer_expressions_if import Token
 class ASTNode:
-    def __init__(self, type_, value=None):
+    def __init__(self, type_, value=None, line=None):
         self.type = type_
         self.value = value
         self.children = []
+        self.line = line
     def __repr__(self):
         return f"{self.type}({self.value}) {self.children}"
-
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
-
     def peek(self):
         return self.tokens[self.pos] if self.pos < len(self.tokens) else None
-
     def advance(self):
         self.pos += 1
-
     def parse(self):
         nodes = []
         while self.peek():
@@ -27,10 +23,9 @@ class Parser:
             if node:
                 nodes.append(node)
         return nodes
-
-    # ----------------------
-    # Statements
-    # ----------------------
+  
+  
+  
     def statement(self):
         tok = self.peek()
         if not tok:
@@ -44,9 +39,8 @@ class Parser:
         else:
             self.advance()
             return None
-
     def var_declaration(self):
-        self.advance()  # skip 'var'
+        self.advance()
         name_tok = self.peek()
         self.advance()
         self.expect('ASSIGN')
@@ -55,9 +49,8 @@ class Parser:
         node = ASTNode('VarDecl', name_tok.value)
         node.children.append(value_node)
         return node
-
     def print_statement(self):
-        self.advance()  # skip 'print'
+        self.advance()
         self.expect('LPAREN')
         expr_node = self.parse_expression()
         self.expect('RPAREN')
@@ -65,9 +58,8 @@ class Parser:
         node = ASTNode('Print')
         node.children.append(expr_node)
         return node
-
     def if_statement(self):
-        self.advance()  # skip 'if'
+        self.advance()
         self.expect('LPAREN')
         left_expr = self.parse_expression()
         op_tok = self.peek()
@@ -85,10 +77,9 @@ class Parser:
         node.children.append(ASTNode('Condition', (left_expr, op_tok.value, right_expr)))
         node.children.append(ASTNode('Body', body_nodes))
         return node
-
-    # ----------------------
-    # Expression parser (left-to-right, simple)
-    # ----------------------
+  
+  
+  
     def parse_expression(self):
         node = self.parse_term()
         while self.peek() and self.peek().type in ('PLUS', 'MINUS'):
@@ -100,7 +91,6 @@ class Parser:
             op_node.children.append(right)
             node = op_node
         return node
-
     def parse_term(self):
         node = self.parse_factor()
         while self.peek() and self.peek().type in ('MULT', 'DIV'):
@@ -112,7 +102,6 @@ class Parser:
             op_node.children.append(right)
             node = op_node
         return node
-
     def parse_factor(self):
         tok = self.peek()
         if tok.type in ('NUMBER', 'STRING', 'IDENT'):
@@ -125,10 +114,9 @@ class Parser:
             return node
         else:
             raise SyntaxError(f"Unexpected token {tok}")
-
-    # ----------------------
-    # Utility
-    # ----------------------
+  
+  
+  
     def expect(self, type_):
         tok = self.peek()
         if not tok or tok.type != type_:

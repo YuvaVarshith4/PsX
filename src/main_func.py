@@ -1,4 +1,4 @@
-# src/main_func.py - Main entry point for PsX interpreter with function support
+
 import sys
 from lexer_func import tokenize
 from parser_func import Parser

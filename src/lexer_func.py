@@ -1,4 +1,3 @@
-# src/lexer_func.py - Lexer for PsX with function support
 import re
 
 TOKEN_SPEC = [
@@ -26,8 +25,8 @@ TOKEN_SPEC = [
     ('RPAREN',   r'\)'),
     ('LBRACE',   r'\{'),
     ('RBRACE',   r'\}'),
-    ('LBRACKET', r'\['),  # Added for arrays
-    ('RBRACKET', r'\]'),  # Added for arrays
+    ('LBRACKET', r'\['),
+    ('RBRACKET', r'\]'),
     ('RANGE',    r'\.\.'),
     ('COMMA',    r','),
     ('GT',       r'>'),
@@ -36,7 +35,7 @@ TOKEN_SPEC = [
     ('MINUS',    r'-'),
     ('MULT',     r'\*'),
     ('DIV',      r'/'),
-    ('MOD',      r'%'),   # Added for modulo operation
+    ('MOD',      r'%'), 
     ('SKIP',     r'[ \t]+'),
     ('NEWLINE',  r'\n'),
 ]
